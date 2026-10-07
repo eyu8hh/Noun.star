@@ -46,13 +46,19 @@ jobs:
             sed -i 's| android:icon="@mipmap/ic_launcher"||; s| android:roundIcon="@mipmap/ic_launcher_round"||' app/src/main/AndroidManifest.xml
           fi
 
-      - name: Verify offline assets
+      - name: Create theme resources
         run: |
-          ls -l app/src/main/assets/www
-          ls -l app/src/main/assets/www/fonts
+          mkdir -p app/src/main/res/values
+          printf '%s\n' '<resources><color name="bg">#050505</color></resources>' > app/src/main/res/values/colors.xml
+          printf '%s\n' '<resources><style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar"><item name="android:windowBackground">@color/bg</item><item name="android:statusBarColor">@color/bg</item><item name="android:navigationBarColor">@color/bg</item></style></resources>' > app/src/main/res/values/styles.xml
+
+      - name: Verify project files
+        run: |
+          find app/src/main -type f | grep -v '/assets/www/index.html' | sort
+          ls -l app/src/main/assets/www app/src/main/assets/www/fonts
 
       - name: Build debug APK
-        run: gradle assembleDebug --stacktrace
+        run: gradle assembleDebug --console=plain
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

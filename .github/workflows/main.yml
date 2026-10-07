@@ -52,10 +52,10 @@ jobs:
           printf '%s\n' '<resources><color name="bg">#050505</color></resources>' > app/src/main/res/values/colors.xml
           printf '%s\n' '<resources><style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar"><item name="android:windowBackground">@color/bg</item><item name="android:statusBarColor">@color/bg</item><item name="android:navigationBarColor">@color/bg</item></style></resources>' > app/src/main/res/values/styles.xml
 
-      - name: Verify project files
+      - name: Fix Kotlin duplicate classes
         run: |
-          find app/src/main -type f | grep -v '/assets/www/index.html' | sort
-          ls -l app/src/main/assets/www app/src/main/assets/www/fonts
+          printf '\n%s\n' "configurations.all { resolutionStrategy { force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22', 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22', 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22' } }" >> app/build.gradle
+          tail -n 3 app/build.gradle
 
       - name: Build debug APK
         run: gradle assembleDebug --console=plain
